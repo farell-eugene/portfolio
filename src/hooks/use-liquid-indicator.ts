@@ -34,14 +34,25 @@ export function useLiquidIndicator(
     const ind = indicator.current;
     if (!ind) return;
     const s = { x: 0, w: 0, o: 0, vx: 0, lift: 0 };
+    // Resting height from CSS (h-full / top-1 bottom-1). Re-measured on resize.
+    let baseH = 0;
+    const measureBase = () => {
+      const prev = ind.style.height;
+      ind.style.height = "";
+      baseH = ind.offsetHeight;
+      ind.style.height = prev;
+    };
     const apply = () => {
+      if (!baseH) measureBase();
       const speed = Math.min(1, Math.abs(s.vx) / 2500);
-      const stretchW = s.w + speed * 26;
-      ind.style.width = `${stretchW}px`;
-      ind.style.translate = `${s.x - (stretchW - s.w) / 2}px 0`;
-      const sx = 1 + s.lift * 0.14;
-      const sy = (1 + s.lift * 0.5) * (1 - speed * 0.2 * (1 - s.lift * 0.6));
-      ind.style.scale = `${sx} ${sy}`;
+      // Grow by changing the real width/height, NOT transform: scale. Scaling an element
+      // with backdrop-filter makes Chrome stretch a low-res copy of the glass, which is
+      // what made the lens look blocky and "glitchy".
+      const w = s.w * (1 + s.lift * 0.14) + speed * 26 * (1 - s.lift * 0.5);
+      const h = baseH * (1 + s.lift * 0.5) * (1 - speed * 0.18 * (1 - s.lift * 0.6));
+      ind.style.width = `${w.toFixed(2)}px`;
+      ind.style.height = `${h.toFixed(2)}px`;
+      ind.style.translate = `${(s.x - (w - s.w) / 2).toFixed(2)}px ${(-(h - baseH) / 2).toFixed(2)}px`;
       ind.style.opacity = String(s.o);
       // lens sits above the labels only while lifted, so it can magnify them
       ind.style.zIndex = s.lift > 0.04 ? "20" : "0";
@@ -54,7 +65,13 @@ export function useLiquidIndicator(
       o: createSpring(0, springs.lift, (o) => ((s.o = o), apply())),
       lift: createSpring(0, liftUp, (l) => ((s.lift = l), apply())),
     };
+    const onResize = () => {
+      baseH = 0;
+      apply();
+    };
+    window.addEventListener("resize", onResize);
     return () => {
+      window.removeEventListener("resize", onResize);
       if (sp.current) Object.values(sp.current).forEach((x) => x.stop());
     };
   }, [indicator]);

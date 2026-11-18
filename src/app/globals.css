@@ -503,6 +503,18 @@
 html.lg-refract .glass.lens {
   backdrop-filter: url(#lg-lens) blur(var(--glass-blur-lens)) saturate(1.9) brightness(1.05);
 }
+/* frosted + lens (navbar): rim refraction but a proper blur so text behind doesn't compete */
+html.lg-refract .glass.lens.glass-frosted {
+  backdrop-filter: url(#lg-lens) blur(var(--glass-blur)) saturate(1.9) brightness(1.04);
+}
+/* navbar: slightly darker in dark mode so the links read clearly over busy content */
+.dark .nav-glass {
+  --glass-fill-top: rgb(16 18 28 / 0.62);
+  --glass-fill-bottom: rgb(8 10 18 / 0.7);
+}
+.nav-glass {
+  --glass-blur: 18px;
+}
 /* icon bubbles are ~90% solid colour: skip the backdrop work entirely */
 .glass.glass-solid {
   -webkit-backdrop-filter: none;

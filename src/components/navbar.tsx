@@ -60,7 +60,7 @@ export function Navbar() {
       <nav
         aria-label="Main"
         className={cn(
-          "glass lens mx-auto flex h-14 items-center justify-between rounded-full px-2 pl-5 transition-[max-width] duration-700 ease-smooth",
+          "glass glass-frosted nav-glass lens mx-auto flex h-14 items-center justify-between rounded-full px-2 pl-5 transition-[max-width] duration-700 ease-smooth",
           scrolled || open ? "max-w-4xl" : "max-w-6xl",
         )}
       >
@@ -83,7 +83,8 @@ export function Navbar() {
                 aria-current={active === l.href ? "true" : undefined}
                 className={cn(
                   "relative block rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-500",
-                  active === l.href ? "font-semibold text-white" : "text-muted-foreground hover:text-foreground",
+                  active === l.href ? "font-semibold text-white" : "text-foreground/85 hover:text-foreground",
+                  "dark:[text-shadow:0_1px_2px_rgb(0_0_0/0.45)]",
                 )}
               >
                 {l.label}
