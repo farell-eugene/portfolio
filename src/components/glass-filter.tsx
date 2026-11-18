@@ -16,14 +16,21 @@ import { useEffect, useRef } from "react";
  * what made the held lens look "glitchy".)
  */
 
+/* Resting glass (navbar, buttons): the original edge-only refraction the site launched with.
+   Red ramps horizontally, green vertically; neutral in the middle, bending only near the rim. */
+const restX = `data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" preserveAspectRatio="none"><linearGradient id="g"><stop offset="0" stop-color="#f00"/><stop offset=".2" stop-color="#800000"/><stop offset=".8" stop-color="#800000"/><stop offset="1" stop-color="#000"/></linearGradient><rect width="100" height="100" fill="url(#g)"/></svg>`,
+)}`;
+const restY = `data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" preserveAspectRatio="none"><linearGradient id="g" x2="0" y2="1"><stop offset="0" stop-color="#0f0"/><stop offset=".25" stop-color="#008000"/><stop offset=".75" stop-color="#008000"/><stop offset="1" stop-color="#000"/></linearGradient><rect width="100" height="100" fill="url(#g)"/></svg>`,
+)}`;
+
 const NEUTRAL = `data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect width="4" height="4" fill="#808080"/></svg>`,
 )}`;
 
-/** Builds a displacement map PNG for a pill (fully rounded rectangle). */
-function lensMap(zoom: number, rim: number, bezel: number) {
-  const W = 256;
-  const H = 128;
+/** Builds a displacement map PNG for a pill (fully rounded rectangle) of the given canvas size. */
+function lensMap(zoom: number, rim: number, bezel: number, W = 256, H = 128) {
   const c = document.createElement("canvas");
   c.width = W;
   c.height = H;
@@ -74,7 +81,6 @@ function lensMap(zoom: number, rim: number, bezel: number) {
 }
 
 export function GlassFilter() {
-  const restMap = useRef<SVGFEImageElement>(null);
   const liftMap = useRef<SVGFEImageElement>(null);
 
   useEffect(() => {
@@ -82,8 +88,6 @@ export function GlassFilter() {
     if (document.documentElement.classList.contains("lite")) return;
     const brands = (navigator as Navigator & { userAgentData?: { brands: { brand: string }[] } }).userAgentData?.brands;
     if (!brands?.some((b) => /Chromium|Google Chrome|Microsoft Edge/.test(b.brand))) return;
-    // resting glass: only the rim bends a little
-    restMap.current?.setAttribute("href", lensMap(0, 0.7, 0.6));
     // held lens: soft ~1.15x magnifier with a smooth curved rim
     liftMap.current?.setAttribute("href", lensMap(0.45, 0.55, 0.5));
     document.documentElement.classList.add("lg-refract");
@@ -101,8 +105,10 @@ export function GlassFilter() {
         primitiveUnits="objectBoundingBox"
         colorInterpolationFilters="sRGB"
       >
-        <feImage ref={restMap} href={NEUTRAL} x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="map" />
-        <feDisplacementMap in="SourceGraphic" in2="map" scale="0.1" xChannelSelector="R" yChannelSelector="G" />
+        <feImage href={restX} x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="mx" />
+        <feImage href={restY} x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="my" />
+        <feComposite in="mx" in2="my" operator="arithmetic" k2="1" k3="1" result="map" />
+        <feDisplacementMap in="SourceGraphic" in2="map" scale="0.12" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
       {/* held lens: smooth magnifier, lightly softened so the bent text doesn't shimmer */}

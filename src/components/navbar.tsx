@@ -60,7 +60,7 @@ export function Navbar() {
       <nav
         aria-label="Main"
         className={cn(
-          "glass glass-frosted nav-glass lens mx-auto flex h-14 items-center justify-between rounded-full px-2 pl-5 transition-[max-width] duration-700 ease-smooth",
+          "glass lens mx-auto flex h-14 items-center justify-between rounded-full px-2 pl-5 transition-[max-width] duration-700 ease-smooth",
           scrolled || open ? "max-w-4xl" : "max-w-6xl",
         )}
       >
