@@ -1,0 +1,968 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "lenis/dist/lenis.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system: ui-ux-pro-max "Liquid Glass" on a dark base, with two accent
+ * palettes (Warm / Blue) the visitor can switch. Fira Sans / Fira Code type,
+ * Instrument Serif italics as accents.
+ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-fira-sans);
+  --font-mono: var(--font-fira-code);
+  --font-heading: var(--font-fira-sans);
+  --font-serif: var(--font-instrument-serif);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-highlight: var(--highlight);
+  --color-highlight-soft: var(--highlight-soft);
+  --color-primary-soft: var(--primary-soft);
+  --color-grid: var(--grid);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-marquee: marquee 55s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 60s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  @keyframes marquee-reverse {
+    from {
+      transform: translate3d(-50%, 0, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+}
+
+/* tool chips in the logo strip: solid (no backdrop blur) so 50+ moving chips stay cheap */
+.tool-chip {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--card) 92%, white 8%), var(--card));
+  border-color: var(--border);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 6px 16px -10px rgb(0 0 0 / 0.5);
+  transition:
+    border-color 0.4s,
+    box-shadow 0.4s;
+}
+.tool-chip:hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 8px 24px -10px color-mix(in srgb, var(--primary) 45%, transparent);
+}
+
+/* ------------------------------------------------------------------
+ * Colour tokens (design-system skill: primitive → semantic → component)
+ * Two accent palettes on <html data-accent="warm|blue">, each with a
+ * light and a dark variant. Dark is the default theme.
+ * ------------------------------------------------------------------ */
+
+/* ---------- shared neutrals ---------- */
+:root {
+  --destructive: #dc2626;
+  --radius: 0.75rem;
+}
+.dark {
+  --destructive: #f87171;
+}
+
+/* ---------- WARM accent (orange / red / gold) ---------- */
+:root,
+[data-accent="warm"] {
+  --background: #faf6f3;
+  --foreground: #1c1410;
+  --card: #ffffff;
+  --card-foreground: #1c1410;
+  --popover: #ffffff;
+  --popover-foreground: #1c1410;
+  --primary: #c2410c;
+  --primary-foreground: #ffffff;
+  --primary-soft: #ffedd5;
+  --secondary: #f3ece6;
+  --secondary-foreground: #1c1410;
+  --muted: #f5efe9;
+  --muted-foreground: #57534e;
+  --accent: #f3ece6;
+  --accent-foreground: #1c1410;
+  --highlight: #be123c;
+  --highlight-soft: #ffe4e6;
+  --border: #e9e1da;
+  --input: #e9e1da;
+  --ring: #ea580c;
+  --grid: rgb(28 20 16 / 0.05);
+
+  /* autumn: burnt orange → red, with a little pink */
+  --g1: #ea580c;
+  --g2: #dc2626;
+  --g3: #db2777;
+  --orb-1: #f97316;
+  --orb-2: #dc2626;
+  --orb-3: #f59e0b;
+  --orb-4: #ec4899;
+  --orb-5: #ea580c;
+  --tint-main: #c2410c;
+  --tint-a: #c2410c;
+  --tint-b: #b91c1c;
+  --tint-glow: 220 60 20;
+  --frame-1a: #9a3412;
+  --frame-1b: #dc2626;
+  --frame-2a: #881337;
+  --frame-2b: #db2777;
+  --frame-3a: #44403c;
+  --frame-3b: #57534e;
+}
+[data-accent="warm"].dark,
+[data-accent="warm"] .dark {
+  --background: #0c0a09;
+  --foreground: #f3ede7;
+  --card: #161210;
+  --card-foreground: #f3ede7;
+  --popover: #161210;
+  --popover-foreground: #f3ede7;
+  --primary: #fb923c;
+  --primary-foreground: #1c0d05;
+  --primary-soft: rgb(251 146 60 / 0.14);
+  --secondary: #211b18;
+  --secondary-foreground: #f3ede7;
+  --muted: #1b1714;
+  --muted-foreground: #a8a29e;
+  --accent: #211b18;
+  --accent-foreground: #f3ede7;
+  --highlight: #fb7185;
+  --highlight-soft: rgb(251 113 133 / 0.14);
+  --border: rgb(231 220 210 / 0.11);
+  --input: rgb(231 220 210 / 0.16);
+  --ring: #fb923c;
+  --grid: rgb(231 220 210 / 0.05);
+
+  --g1: #fb923c;
+  --g2: #f87171;
+  --g3: #f9a8d4;
+}
+
+/* ---------- BLUE accent (blue / violet / cyan) ---------- */
+[data-accent="blue"] {
+  --background: #f4f6fb;
+  --foreground: #0b1324;
+  --card: #ffffff;
+  --card-foreground: #0b1324;
+  --popover: #ffffff;
+  --popover-foreground: #0b1324;
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --primary-soft: #dbe6fd;
+  --secondary: #eef2f7;
+  --secondary-foreground: #0b1324;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #eef2f7;
+  --accent-foreground: #0b1324;
+  --highlight: #6d28d9;
+  --highlight-soft: #ede9fe;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+  --grid: rgb(15 23 42 / 0.06);
+
+  /* blue with a clearly visible (not dominant) violet */
+  --g1: #2563eb;
+  --g2: #7c3aed;
+  --g3: #0284c7;
+  --orb-1: #3b82f6;
+  --orb-2: #8b5cf6;
+  --orb-3: #6366f1;
+  --orb-4: #a855f7;
+  --orb-5: #0ea5e9;
+  --tint-main: #2563eb;
+  --tint-a: #2563eb;
+  --tint-b: #7c3aed;
+  --tint-glow: 79 70 229;
+  --frame-1a: #1e3a8a;
+  --frame-1b: #6d28d9;
+  --frame-2a: #b45309;
+  --frame-2b: #ea580c;
+  --frame-3a: #1e293b;
+  --frame-3b: #475569;
+}
+[data-accent="blue"].dark,
+[data-accent="blue"] .dark {
+  --background: #04070f;
+  --foreground: #e6ebf5;
+  --card: #0a1120;
+  --card-foreground: #e6ebf5;
+  --popover: #0a1120;
+  --popover-foreground: #e6ebf5;
+  --primary: #60a5fa;
+  --primary-foreground: #04070f;
+  --primary-soft: rgb(96 165 250 / 0.14);
+  --secondary: #111a2e;
+  --secondary-foreground: #e6ebf5;
+  --muted: #0e1628;
+  --muted-foreground: #94a3b8;
+  --accent: #111a2e;
+  --accent-foreground: #e6ebf5;
+  --highlight: #c4b5fd;
+  --highlight-soft: rgb(167 139 250 / 0.16);
+  --border: rgb(148 163 184 / 0.13);
+  --input: rgb(148 163 184 / 0.18);
+  --ring: #60a5fa;
+  --grid: rgb(148 163 184 / 0.06);
+
+  --g1: #60a5fa;
+  --g2: #a78bfa;
+  --g3: #7dd3fc;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: var(--highlight-soft);
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Motion system
+ * Everything is gated behind html.motion (added by <MotionRoot/> after
+ * hydration) so content is fully visible without JavaScript, and it is
+ * switched off for prefers-reduced-motion.
+ * ------------------------------------------------------------------ */
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* expo-out: fast start, long soft landing */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Fade + rise when scrolled into view. Stagger with style={{ "--d": "120ms" }} */
+.motion .reveal {
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity 1s var(--ease-out) var(--d, 0s),
+    translate 1.1s var(--ease-out) var(--d, 0s);
+}
+.motion .reveal.is-in {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Masked word/line rise (see components/split-text.tsx) */
+.split-mask {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+  /* room for tall caps, descenders (g, y) and italic overhang inside the mask;
+     the negative margin cancels it, so the layout itself stays put */
+  padding: 0.12em 0.16em 0.32em;
+  margin: -0.12em -0.16em -0.32em;
+}
+.split-item {
+  display: inline-block;
+}
+.motion .split .split-item {
+  translate: 0 140%;
+  transition: translate 1.1s var(--ease-out);
+  transition-delay: calc(var(--d, 0ms) + var(--i, 0) * 70ms);
+}
+.motion .split.is-in .split-item {
+  translate: 0 0;
+}
+
+/* Photo card: arch unveil + image settle */
+.motion .unveil {
+  clip-path: inset(100% 0 0 0 round 2rem);
+  transition: clip-path 1.4s var(--ease-out) var(--d, 0s);
+}
+.motion .unveil.is-in {
+  clip-path: inset(0 0 0 0 round 2rem);
+}
+.motion .unveil .settle {
+  scale: 1.25;
+  transition: scale 1.8s var(--ease-out) var(--d, 0s);
+}
+.motion .unveil.is-in .settle {
+  scale: 1;
+}
+
+/* Pop in (badges / floating chips) */
+.motion .pop {
+  opacity: 0;
+  scale: 0.9;
+  translate: 0 10px;
+  transition:
+    opacity 0.8s var(--ease-out) var(--d, 0s),
+    scale 0.9s cubic-bezier(0.3, 1.5, 0.5, 1) var(--d, 0s),
+    translate 0.9s var(--ease-out) var(--d, 0s);
+}
+.motion .pop.is-in {
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+}
+
+/* Growing hairline under section eyebrows / timelines */
+.motion .grow-x {
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale 1.3s var(--ease-out) var(--d, 0s);
+}
+.motion .is-in .grow-x,
+.motion .grow-x.is-in {
+  scale: 1 1;
+}
+.motion .grow-y {
+  scale: 1 0;
+  transform-origin: top;
+  transition: scale 1.6s var(--ease-out) var(--d, 0s);
+}
+.motion .grow-y.is-in {
+  scale: 1 1;
+}
+
+/* Interactive niceties */
+.ease-smooth {
+  transition-timing-function: var(--ease-out);
+}
+.press {
+  transition:
+    scale 0.4s var(--ease),
+    background-color 0.3s,
+    color 0.3s,
+    opacity 0.3s,
+    box-shadow 0.4s var(--ease);
+}
+.press:active {
+  scale: 0.97;
+}
+.lift {
+  transition:
+    translate 0.6s var(--ease-out),
+    box-shadow 0.6s var(--ease-out),
+    border-color 0.4s;
+}
+@media (hover: hover) {
+  .lift:hover {
+    translate: 0 -4px;
+  }
+}
+
+/* Performance: freeze looping animations in sections that are off screen (see MotionRoot) */
+[data-offscreen],
+[data-offscreen] * {
+  animation-play-state: paused !important;
+}
+
+/* Lite mode (set in layout.tsx on weaker devices / data saver):
+   still background, no bobbing, static gradient text. Springs, hovers,
+   scroll reveals and the glass itself all stay. */
+.lite .orb,
+.lite .bob,
+.lite .text-liquid {
+  animation: none !important;
+}
+.lite .glass {
+  --glass-blur: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .motion .reveal,
+  .motion .split .split-item,
+  .motion .unveil,
+  .motion .unveil .settle,
+  .motion .pop,
+  .motion .grow-x,
+  .motion .grow-y {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+  .animate-marquee,
+  .animate-marquee-reverse {
+    animation: none;
+  }
+  .lift:hover {
+    translate: none;
+  }
+}
+
+
+/* ==================================================================
+ * Liquid glass (iOS 26 style)
+ * Tokens follow the design-system skill: primitive → semantic → component.
+ * Used only for navigation and controls (ui-ux-pro-max "Liquid Glass" rule);
+ * content stays on solid surfaces for readability.
+ * ================================================================== */
+:root {
+  --orb-opacity: 0.5;
+
+  /* component: glass */
+  --glass-fill-top: rgb(255 255 255 / 0.62);
+  --glass-fill-bottom: rgb(255 255 255 / 0.32);
+  --glass-tint: rgb(255 255 255 / 0);
+  --glass-edge: rgb(255 255 255 / 0.9);
+  --glass-edge-dim: rgb(255 255 255 / 0.18);
+  --glass-inner-shadow: rgb(15 23 42 / 0.06);
+  --glass-shadow: 0 12px 32px -12px rgb(30 41 59 / 0.28), 0 2px 8px -2px rgb(30 41 59 / 0.1);
+  --glass-blur: 14px;
+  --glass-blur-lens: 3px;
+  --glass-sheen: rgb(255 255 255 / 0.75);
+}
+.dark {
+  --orb-opacity: 0.34;
+  --glass-fill-top: rgb(255 255 255 / 0.13);
+  --glass-fill-bottom: rgb(255 255 255 / 0.04);
+  --glass-edge: rgb(255 255 255 / 0.5);
+  --glass-edge-dim: rgb(255 255 255 / 0.06);
+  --glass-inner-shadow: rgb(0 0 0 / 0.25);
+  --glass-shadow: 0 14px 36px -12px rgb(0 0 0 / 0.65), 0 2px 8px -2px rgb(0 0 0 / 0.4);
+  --glass-sheen: rgb(255 255 255 / 0.35);
+}
+
+@layer components {
+.glass {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, var(--glass-fill-top), var(--glass-fill-bottom)),
+    var(--glass-tint-layer, linear-gradient(var(--glass-tint), var(--glass-tint)));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.9) brightness(1.04);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.9) brightness(1.04);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.55),
+    inset 0 -1px 2px var(--glass-inner-shadow),
+    inset 0 -8px 16px -10px rgb(255 255 255 / 0.25),
+    var(--glass-shadow);
+  transition:
+    background 0.4s var(--ease),
+    box-shadow 0.4s var(--ease);
+}
+/* lens refraction where supported (Chromium): clearer glass that bends the edges */
+/* Performance: the SVG lens is opt-in (.lens) and only used on key controls
+   (navbar, main buttons, segmented controls). Everything else is plain frosted glass. */
+html.lg-refract .glass.lens {
+  backdrop-filter: url(#lg-lens) blur(var(--glass-blur-lens)) saturate(1.9) brightness(1.05);
+}
+/* icon bubbles are ~90% solid colour: skip the backdrop work entirely */
+.glass.glass-solid {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+/* rim light: bright upper-left edge fading to a dim lower edge */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    140deg,
+    var(--glass-edge) 0%,
+    var(--glass-edge-dim) 32%,
+    var(--glass-edge-dim) 64%,
+    color-mix(in srgb, var(--glass-edge) 70%, transparent) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+/* specular highlight that follows the finger / cursor */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--mx, 30%) var(--my, 0%), var(--glass-sheen), transparent 62%);
+  opacity: 0.55;
+  transition: opacity 0.5s var(--ease);
+}
+@media (hover: hover) {
+  .glass:hover::before {
+    opacity: 0.95;
+  }
+}
+.glass[data-pressed]::before {
+  opacity: 1;
+}
+.glass[data-pressed] {
+  --glass-fill-top: rgb(255 255 255 / 0.72);
+}
+.dark .glass[data-pressed] {
+  --glass-fill-top: rgb(255 255 255 / 0.2);
+}
+
+/* tints (iOS tinted glass) */
+.glass-tinted {
+  --glass-tint: color-mix(in srgb, var(--tint-main) 86%, transparent);
+  /* two-tone tint: blue → violet, or burnt orange → red */
+  --glass-tint-layer: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--tint-a) 88%, transparent),
+    color-mix(in srgb, var(--tint-b) 88%, transparent)
+  );
+  --glass-fill-top: rgb(255 255 255 / 0.3);
+  --glass-fill-bottom: rgb(255 255 255 / 0);
+  --glass-sheen: rgb(255 255 255 / 0.55);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.6),
+    inset 0 -2px 6px rgb(15 23 42 / 0.25),
+    0 14px 30px -10px rgb(var(--tint-glow) / 0.6),
+    0 2px 6px -2px rgb(var(--tint-glow) / 0.4);
+}
+.glass-amber {
+  --glass-tint: color-mix(in srgb, #fbbf24 85%, transparent);
+  --glass-fill-top: rgb(255 255 255 / 0.4);
+  --glass-fill-bottom: rgb(255 255 255 / 0);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.7),
+    inset 0 -2px 6px rgb(120 53 15 / 0.2),
+    0 14px 30px -10px rgb(245 158 11 / 0.6);
+}
+.glass-tint-1 {
+  --glass-tint: color-mix(in srgb, var(--orb-1) 28%, transparent);
+}
+.glass-tint-2 {
+  --glass-tint: color-mix(in srgb, var(--orb-3) 28%, transparent);
+}
+.glass-tint-3 {
+  --glass-tint: color-mix(in srgb, var(--orb-2) 26%, transparent);
+}
+/* round bubbles get a soft inner "sphere" highlight */
+.glass-bubble {
+  box-shadow:
+    inset 0 2px 2px rgb(255 255 255 / 0.65),
+    inset 0 -10px 18px -8px rgb(255 255 255 / 0.35),
+    inset 6px 0 14px -10px rgb(255 255 255 / 0.4),
+    var(--glass-shadow);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  html.lg-refract .glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--card);
+  }
+  .glass-tinted {
+    background: linear-gradient(120deg, var(--tint-a), var(--tint-b));
+  }
+  .glass-amber {
+    background: #fbbf24;
+  }
+}
+
+/* ---------- ambient colour orbs ---------- */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  /* Performance: no filter: blur() on these huge layers. The radial gradients already
+     fade to transparent, and the grain overlay hides any banding. */
+  opacity: var(--orb-opacity);
+  will-change: transform;
+  animation: orb-drift 26s ease-in-out infinite alternate;
+}
+.orb-a {
+  width: 46vmax;
+  height: 46vmax;
+  left: -12vmax;
+  top: -14vmax;
+  background: radial-gradient(circle at 30% 30%, var(--orb-1), transparent 68%);
+}
+.orb-b {
+  width: 40vmax;
+  height: 40vmax;
+  right: -10vmax;
+  top: 8vh;
+  background: radial-gradient(circle at 60% 40%, var(--orb-2), transparent 68%);
+  animation-duration: 31s;
+  animation-delay: -6s;
+}
+.orb-c {
+  width: 34vmax;
+  height: 34vmax;
+  left: 18vw;
+  bottom: -16vmax;
+  background: radial-gradient(circle, var(--orb-3), transparent 66%);
+  animation-duration: 29s;
+  animation-delay: -12s;
+}
+.orb-d {
+  width: 26vmax;
+  height: 26vmax;
+  right: 12vw;
+  bottom: -6vmax;
+  background: radial-gradient(circle, var(--orb-4), transparent 66%);
+  animation-duration: 23s;
+  animation-delay: -3s;
+}
+.orb-e {
+  width: 18vmax;
+  height: 18vmax;
+  left: 46vw;
+  top: 30vh;
+  background: radial-gradient(circle, var(--orb-5), transparent 66%);
+  opacity: calc(var(--orb-opacity) * 0.55);
+  animation-duration: 34s;
+  animation-delay: -18s;
+}
+@keyframes orb-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6vw, 4vh, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-4vw, 8vh, 0) scale(0.94);
+  }
+  100% {
+    transform: translate3d(3vw, -5vh, 0) scale(1.04);
+  }
+}
+.grain {
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* floating bubbles bob gently */
+.bob {
+  animation: bob 7s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0);
+  }
+}
+
+/* animated gradient text */
+.text-liquid {
+  background-image: linear-gradient(100deg, var(--g1) 0%, var(--g2) 30%, var(--g3) 55%, var(--g1) 80%, var(--g2) 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: liquid-shift 9s ease-in-out infinite alternate;
+  /* background-clip:text only paints inside the box, so glyph parts outside it
+     (the tail of "g", italic overhang) would vanish. Extend the painted area
+     with padding and cancel it with negative margin so layout doesn't move. */
+  padding: 0.1em 0.14em 0.28em 0.06em;
+  margin: -0.1em -0.14em -0.28em -0.06em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+@keyframes liquid-shift {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+/* cursor spotlight on cards */
+.spotlight {
+  position: relative;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--sx, 50%) var(--sy, -20%),
+    color-mix(in srgb, var(--orb-1) 16%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.5s var(--ease);
+}
+@media (hover: hover) {
+  .spotlight:hover::before {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .bob,
+  .text-liquid {
+    animation: none;
+  }
+}
+
+}
+
+/* held liquid lens (iOS 26 tab bar): clear, magnifying, floating above the labels */
+.lg-drop {
+  pointer-events: none;
+  transform-origin: center;
+}
+.lg-drop[data-lifted] {
+  --glass-fill-top: rgb(255 255 255 / 0.1);
+  --glass-fill-bottom: rgb(255 255 255 / 0.02);
+  --glass-tint: transparent;
+  --glass-tint-layer: linear-gradient(transparent, transparent);
+  --glass-edge: rgb(255 255 255 / 0.95);
+  -webkit-backdrop-filter: blur(0.5px) saturate(1.5) brightness(1.12);
+  backdrop-filter: blur(0.5px) saturate(1.5) brightness(1.12);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.8),
+    inset 0 -2px 4px rgb(255 255 255 / 0.25),
+    inset 0 0 12px rgb(255 255 255 / 0.12),
+    0 12px 28px -8px rgb(0 0 0 / 0.5),
+    0 4px 10px -4px rgb(0 0 0 / 0.35);
+}
+html.lg-refract .lg-drop[data-lifted] {
+  backdrop-filter: url(#lg-magnify) saturate(1.5) brightness(1.12);
+}
+.lg-track {
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.lg-track a,
+.lg-track button {
+  -webkit-user-drag: none;
+}
+
+/* ---------- liquid-glass content cards (about, experience, projects) ---------- */
+.liquid-card {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.035), transparent 40%),
+    color-mix(in srgb, var(--card) 88%, transparent);
+  border: 1px solid var(--border);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 18px 40px -24px rgb(0 0 0 / 0.6);
+  transition:
+    box-shadow 0.6s var(--ease-out),
+    border-color 0.6s var(--ease-out);
+}
+/* content sits above the sheen; decorative .absolute layers keep their own positioning */
+.liquid-card > :not(.absolute) {
+  position: relative;
+  z-index: 1;
+}
+/* glass sheen that follows the cursor */
+.liquid-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%), rgb(255 255 255 / 0.09), transparent 55%),
+    radial-gradient(520px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--g2) 14%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out);
+}
+/* rim light in the theme gradient */
+.liquid-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--g1) 85%, transparent),
+    color-mix(in srgb, var(--g2) 55%, transparent) 45%,
+    transparent 70%,
+    color-mix(in srgb, var(--g3) 60%, transparent)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out);
+}
+@media (hover: hover) {
+  .liquid-card:hover {
+    border-color: transparent;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.1),
+      0 28px 60px -28px rgb(var(--tint-glow) / 0.55);
+  }
+  .liquid-card:hover::before,
+  .liquid-card:hover::after {
+    opacity: 1;
+  }
+}
+.liquid-card[data-pressed]::before {
+  opacity: 1;
+}
+
+/* ---------- experience timeline ---------- */
+.tl-fill {
+  background: linear-gradient(to bottom, var(--g1), var(--g2) 55%, var(--g3));
+  transform-origin: top;
+  will-change: transform;
+}
+.tl-head {
+  background: radial-gradient(circle, #fff 0 22%, var(--g2) 40%, transparent 72%);
+  box-shadow: 0 0 18px 4px color-mix(in srgb, var(--g2) 60%, transparent);
+  will-change: transform;
+}
+.tl-node {
+  border: 2px solid color-mix(in srgb, var(--muted-foreground) 45%, transparent);
+  background: var(--background);
+  transition:
+    border-color 0.5s var(--ease-out),
+    background 0.5s var(--ease-out),
+    box-shadow 0.5s var(--ease-out),
+    scale 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.tl-node[data-active] {
+  border-color: var(--g1);
+  background: color-mix(in srgb, var(--g1) 30%, var(--background));
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--g1) 18%, transparent), 0 0 16px color-mix(in srgb, var(--g2) 50%, transparent);
+  scale: 1.15;
+}
+.tl-date {
+  transition:
+    color 0.6s var(--ease-out),
+    opacity 0.6s var(--ease-out);
+}
+.tl-row:not([data-active]) .tl-date {
+  opacity: 0.45;
+}
+
+/* glass that sits on top of the photo: frosted + darker fill so white labels stay readable */
+.glass-label {
+  --glass-fill-top: rgb(12 14 24 / 0.38);
+  --glass-fill-bottom: rgb(12 14 24 / 0.6);
+  --glass-sheen: rgb(255 255 255 / 0.4);
+  color: #fff;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
+  -webkit-backdrop-filter: blur(12px) saturate(1.6) brightness(0.9);
+  backdrop-filter: blur(12px) saturate(1.6) brightness(0.9);
+}
+.glass-label.glass-tint-1,
+.glass-label.glass-tint-2,
+.glass-label.glass-tint-3 {
+  /* keep the colour, just deeper */
+  --glass-fill-top: rgb(12 14 24 / 0.22);
+  --glass-fill-bottom: rgb(12 14 24 / 0.45);
+}
+.glass-label.glass-tint-1 {
+  --glass-tint: color-mix(in srgb, var(--orb-1) 55%, transparent);
+}
+.glass-label.glass-tint-2 {
+  --glass-tint: color-mix(in srgb, var(--orb-3) 55%, transparent);
+}
+.glass-label.glass-tint-3 {
+  --glass-tint: color-mix(in srgb, var(--orb-2) 55%, transparent);
+}
+
+/* project cover: thin glossy bezel + inset window */
+.cover-frame {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    inset 0 -1px 0 rgb(0 0 0 / 0.25);
+}
+.cover-frame::before {
+  /* soft gloss across the bezel so it reads as glass, not a thick border */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.22), transparent 38%, transparent 70%, rgb(255 255 255 / 0.08));
+}
+.cover-window {
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--g2) 10%, transparent), transparent 60%),
+    var(--card);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 0 0 1px rgb(0 0 0 / 0.25);
+}
+
+/* project cover frames follow the accent */
+.frame-ml {
+  background-image: linear-gradient(135deg, var(--frame-1a), var(--frame-1b));
+}
+.frame-bi {
+  background-image: linear-gradient(135deg, var(--frame-2a), var(--frame-2b));
+}
+.frame-desktop {
+  background-image: linear-gradient(135deg, var(--frame-3a), var(--frame-3b));
+}
